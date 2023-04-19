@@ -34,7 +34,7 @@ def process_video(video_path: str, model: YOLO):
                 text_offset_x = x1 + (x2 - x1) // 2 - text_width // 2
                 text_offset_y = y1 - text_height
 
-                if cls in ['NO-Hardhat', 'NO-Mask', 'NO-Safety Vest'] and conf > 40:
+                if cls in ['NO-Hardhat', 'NO-Mask', 'NO-Safety Vest'] and conf > 30:
                     cv2.rectangle(img,(x1,y1),(x2,y2),(000,000,255),1)
                     cv2.putText(img, text, (text_offset_x, text_offset_y), cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5, color=(000,000,255), thickness=2)
                 else:

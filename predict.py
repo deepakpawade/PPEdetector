@@ -33,7 +33,7 @@ def main():
 
     elif args.urls is not None:
         model = YOLO(args.model)
-        process_ip_cameras(args.urls, model)
+        process_ip(args.urls, model)
         caps = []
         for url in args.urls:
             cap = cv2.VideoCapture(url)
