@@ -3,6 +3,7 @@ import cv2
 import math
 from ultralytics import YOLO
 from sort import * #TODO
+from deep_sort import *
 
 class_names = ['Hardhat', 'Mask', 'NO-Hardhat', 'NO-Mask', 'NO-Safety Vest', 'Person', 'Safety Cone', 'Safety Vest', 'machinery', 'vehicle']
 
@@ -23,7 +24,6 @@ def process_video(video_path: str, model: YOLO):
             for box in boxes:
                 x1, y1, x2, y2 = box.xyxy[0]
                 x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-
                 # getting confidence level
                 conf = math.ceil((box.conf[0] * 100))
                 # class names

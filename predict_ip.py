@@ -73,8 +73,6 @@ class CameraThread(threading.Thread):
 threads = []
 for i in range(len(models)):
     threads.append(CameraThread(models[i], caps[i]))
-    cv2.namedWindow(threads[i].getName())
-    cv2.moveWindow(threads[i].getName(), i * 640, 0)
 
 # start camera threads
 for thread in threads:
@@ -83,6 +81,8 @@ for thread in threads:
 # wait for camera threads to finish
 for thread in threads:
     thread.join()
+# close all OpenCV windows
+cv2.destroyAllWindows()
 
 
 # # initialize YOLO models for both cameras

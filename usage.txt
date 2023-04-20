@@ -1,0 +1,7 @@
+python predict_ip.py --urls http://88.117.170.10/axis-cgi/mjpg/video.cgi http://statenisland.dnsalias.net/mjpg/video.mjpg
+
+python predict.py -device 0
+
+python predict.py -im ./sample.jpg
+
+python predict.py -video ./sample.mp4
