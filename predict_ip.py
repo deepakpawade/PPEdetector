@@ -5,84 +5,85 @@ import threading
 import torch 
 class_names = ['Hardhat', 'Mask', 'NO-Hardhat', 'NO-Mask', 'NO-Safety Vest', 'Person', 'Safety Cone', 'Safety Vest', 'machinery', 'vehicle']
 
-parser = argparse.ArgumentParser(description='Multi-Camera Object Detection')
-parser.add_argument('--urls', nargs='+', help='List of URLs for the cameras', required=True)
-args = parser.parse_args()
-print(args.urls)
-# initialize a YOLO model for each camera
-models = [YOLO("./models/best_10Class_20Epochs.pt") for i in range(len(args.urls))]
+# parser = argparse.ArgumentParser(description='Multi-Camera Object Detection')
+# parser.add_argument('--urls', nargs='+', help='List of URLs for the cameras', required=True)
+# args = parser.parse_args()
+# print(args.urls)
+# # initialize a YOLO model for each camera
+# models = [YOLO("./models/best_10Class_20Epochs.pt") for i in range(len(args.urls))]
 
-# initialize capture objects for all cameras
-caps = [cv2.VideoCapture(url) for url in args.urls]
+def process_ip(urls,models):
+    # initialize capture objects for all cameras
+    caps = [cv2.VideoCapture(url) for url in urls]
 
-# set camera properties (if needed)
-for cap in caps:
-    cap.set(3, 640)
-    cap.set(4, 480)
+    # set camera properties (if needed)
+    for cap in caps:
+        cap.set(3, 640)
+        cap.set(4, 480)
 
-class CameraThread(threading.Thread):
-    def __init__(self, model, cap):
-        threading.Thread.__init__(self)
-        self.model = model
-        self.cap = cap
+    class CameraThread(threading.Thread):
+        def __init__(self, model, cap):
+            threading.Thread.__init__(self)
+            self.model = model
+            self.cap = cap
 
-    def run(self):
-        while True:
-            # read frames from camera
-            success, img = self.cap.read()
+        def run(self):
+            while True:
+                # read frames from camera
+                success, img = self.cap.read()
 
-            # predict objects in frames from camera
-            if success:
-                results = self.model(img, stream=True)
-                for r in results:
-                    boxes = r.boxes
-                    for box in boxes:
-                        x1, y1, x2, y2 = box.xyxy[0]
-                        x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+                # predict objects in frames from camera
+                if success:
+                    results = self.model(img, stream=True)
+                    for r in results:
+                        boxes = r.boxes
+                        for box in boxes:
+                            x1, y1, x2, y2 = box.xyxy[0]
+                            x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
 
-                        # getting confidence level
-                        conf = torch.round(box.conf[0] * 100)
-                        # class names
-                        cls = class_names[int(box.cls[0])]
+                            # getting confidence level
+                            conf = torch.round(box.conf[0] * 100)
+                            # class names
+                            cls = class_names[int(box.cls[0])]
 
-                        text = f"{cls}: {conf}%"
-                        (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5, thickness=1)
-                        text_offset_x = x1 + (x2 - x1) // 2 - text_width // 2
-                        text_offset_y = y1 - text_height
+                            text = f"{cls}: {conf}%"
+                            (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5, thickness=1)
+                            text_offset_x = x1 + (x2 - x1) // 2 - text_width // 2
+                            text_offset_y = y1 - text_height
 
-                        if cls in ['NO-Hardhat', 'NO-Mask', 'NO-Safety Vest'] and conf > 30:
-                            cv2.rectangle(img,(x1,y1),(x2,y2),(0,0,255),1)
-                            cv2.putText(img, text, (text_offset_x, text_offset_y), cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5, color=(0,0,255), thickness=2)
-                        else:
-                            cv2.rectangle(img,(x1,y1),(x2,y2),(255,0,0),1)
-                            cv2.putText(img, text, (text_offset_x, text_offset_y), cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5, color=(255,0,0), thickness=2)
+                            if cls in ['NO-Hardhat', 'NO-Mask', 'NO-Safety Vest'] and conf > 30:
+                                cv2.rectangle(img,(x1,y1),(x2,y2),(0,0,255),1)
+                                cv2.putText(img, text, (text_offset_x, text_offset_y), cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5, color=(0,0,255), thickness=2)
+                            else:
+                                cv2.rectangle(img,(x1,y1),(x2,y2),(255,0,0),1)
+                                cv2.putText(img, text, (text_offset_x, text_offset_y), cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5, color=(255,0,0), thickness=2)
 
-                # display frame (if needed)
-                img = cv2.resize(img, (640, 480))
-                cv2.imshow(self.getName(), img)
+                    # display frame (if needed)
+                    img = cv2.resize(img, (640, 480))
+                    cv2.imshow(self.getName(), img)
 
-                # exit on key press (if needed)
-                if cv2.waitKey(1) & 0xFF == ord("q"):
-                    break
+                    # exit on key press (if needed)
+                    if cv2.waitKey(1) & 0xFF == ord("q"):
+                        break
 
-        # release capture object and close window
-        self.cap.release()
-        cv2.destroyAllWindows()
+            # release capture object and close window
+            self.cap.release()
+            cv2.destroyAllWindows()
 
-# create camera threads
-threads = []
-for i in range(len(models)):
-    threads.append(CameraThread(models[i], caps[i]))
+    # create camera threads
+    threads = []
+    for i in range(len(models)):
+        threads.append(CameraThread(models[i], caps[i]))
 
-# start camera threads
-for thread in threads:
-    thread.start()
+    # start camera threads
+    for thread in threads:
+        thread.start()
 
-# wait for camera threads to finish
-for thread in threads:
-    thread.join()
-# close all OpenCV windows
-cv2.destroyAllWindows()
+    # wait for camera threads to finish
+    for thread in threads:
+        thread.join()
+    # close all OpenCV windows
+    cv2.destroyAllWindows()
 
 
 # # initialize YOLO models for both cameras
