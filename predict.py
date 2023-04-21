@@ -9,6 +9,7 @@ from ultralytics import YOLO
 import threading
 import logging
 import cv2
+from cryptography.fernet import Fernet
 logging.getLogger('yolo').setLevel(logging.WARNING)
 
 def parse_args():
@@ -17,14 +18,27 @@ def parse_args():
     parser.add_argument('-video', type=str, default=None, help='video path')
     parser.add_argument('-device', type=int, default=None, help='camera id')
     parser.add_argument('-urls', nargs='+',default=None, help='list of IP camera URLs')
-    parser.add_argument('-model', type=str, default="./models/best_10Class_20Epochs.pt", help='model path')
+    parser.add_argument('-model', type=str, default="./models/best_encrypted", help='model path')
     
     args = parser.parse_args()
     return args
 
 def main():
     args = parse_args()
-    model = YOLO(args.model)
+    print('Deciphering model using key')
+    cipher = Fernet(b'skqauwzjSe24yga3tfE-CLfz87OLVMk1LN3afy0vCKc=')
+    print('cipher created')
+    # Read the encrypted data from a file
+    with open(args.model, 'rb') as f:
+        encrypted_data = f.read()
+    print('done loading encrypted model')
+    # Decrypt the data using the same key
+    decrypted_data = cipher.decrypt(encrypted_data)
+    print('deciphering model')
+    
+    model = YOLO(decrypted_data)
+    # model = YOLO(args.model)
+
 
     if args.img is not None:
         model = YOLO(args.model)

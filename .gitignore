@@ -1,3 +1,4 @@
 models/best_10Class_20Epochs.pt
 models/best_xtraLarge.pt
 models/best.pt
+./py_exe

@@ -2,7 +2,7 @@ import argparse
 import cv2
 import math
 from ultralytics import YOLO
-from sort import * #TODO
+# from sort import * #TODO
 
 class_names = ['Hardhat', 'Mask', 'NO-Hardhat', 'NO-Mask', 'NO-Safety Vest', 'Person', 'Safety Cone', 'Safety Vest', 'machinery', 'vehicle']
 

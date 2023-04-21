@@ -5,7 +5,7 @@ import math
 # from deep_sort.tracker import Tracker
 from ultralytics import YOLO
 import numpy as np
-from sort import * #TODO
+# from sort import * #TODO
 # from deep_sort import *
 
 class_names = ['Hardhat', 'Mask', 'NO-Hardhat', 'NO-Mask', 'NO-Safety Vest', 'Person', 'Safety Cone', 'Safety Vest', 'machinery', 'vehicle']
