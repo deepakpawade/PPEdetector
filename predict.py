@@ -17,7 +17,7 @@ def parse_args():
     parser.add_argument('-video', type=str, default=None, help='video path')
     parser.add_argument('-device', type=int, default=None, help='camera id')
     parser.add_argument('-urls', nargs='+',default=None, help='list of IP camera URLs')
-    parser.add_argument('-model', type=str, default="./models/best_encrypted", help='model path')
+    parser.add_argument('-model', type=str, default="./models/best_10Class_20Epochs.pt", help='model path')
     
     args = parser.parse_args()
     return args
