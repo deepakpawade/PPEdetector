@@ -9,7 +9,6 @@ from ultralytics import YOLO
 import threading
 import logging
 import cv2
-from cryptography.fernet import Fernet
 logging.getLogger('yolo').setLevel(logging.WARNING)
 
 def parse_args():
@@ -25,19 +24,19 @@ def parse_args():
 
 def main():
     args = parse_args()
-    print('Deciphering model using key')
-    cipher = Fernet(b'skqauwzjSe24yga3tfE-CLfz87OLVMk1LN3afy0vCKc=')
-    print('cipher created')
-    # Read the encrypted data from a file
-    with open(args.model, 'rb') as f:
-        encrypted_data = f.read()
-    print('done loading encrypted model')
-    # Decrypt the data using the same key
-    decrypted_data = cipher.decrypt(encrypted_data)
-    print('deciphering model')
+    # print('Deciphering model using key')
+    # cipher = Fernet(b'skqauwzjSe24yga3tfE-CLfz87OLVMk1LN3afy0vCKc=')
+    # print('cipher created')
+    # # Read the encrypted data from a file
+    # with open(args.model, 'rb') as f:
+    #     encrypted_data = f.read()
+    # print('done loading encrypted model')
+    # # Decrypt the data using the same key
+    # decrypted_data = cipher.decrypt(encrypted_data)
+    # print('deciphering model')
     
-    model = YOLO(decrypted_data)
-    # model = YOLO(args.model)
+    # model = YOLO(decrypted_data)
+    model = YOLO(args.model)
 
 
     if args.img is not None:
